@@ -53,7 +53,7 @@ export default function Navbar() {
               <div className="user-meta">
                 <span className="user-name">{user.full_name}</span>
                 <span className="role-pill">
-                  {user.role === 'student' ? 'Registered OJT Student' : user.role}
+                  {user.role === 'student' ? 'OJT Student' : user.role}
                 </span>
               </div>
             </div>

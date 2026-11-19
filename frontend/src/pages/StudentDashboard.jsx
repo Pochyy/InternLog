@@ -40,7 +40,7 @@ export default function StudentDashboard() {
 
   return (
     <main className="dashboard-container">
-      {/* Onboarding Action Alert if OJT Profile is not yet configured (Option B) */}
+      {/* Onboarding Action Alert if OJT Profile is not yet configured */}
       {!loadingProfile && !ojtProfile && (
         <div
           className="alert alert-warning"
@@ -70,9 +70,8 @@ export default function StudentDashboard() {
               <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
             <div>
-              <strong>Complete Your OJT Onboarding (SRS FR-1.4):</strong> Configure your Host
-              Company Name, Total Required Hours, Start Date, and Working Days to activate progress
-              forecasting.
+              <strong>Complete Your OJT Setup:</strong> Set up your Host Company, Total Required
+              Hours, Start Date, and Weekly Schedule to activate your completion forecast.
             </div>
           </div>
           <button
@@ -81,7 +80,7 @@ export default function StudentDashboard() {
             style={{ minHeight: '40px', padding: '0.5rem 1.1rem', fontSize: '0.86rem' }}
             onClick={() => setShowSetupModal(true)}
           >
-            Configure OJT Profile Now
+            Set Up OJT Profile
           </button>
         </div>
       )}
@@ -104,13 +103,13 @@ export default function StudentDashboard() {
                 >
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
-                <span>Role: Registered OJT Student</span>
+                <span>OJT Student Workspace</span>
               </div>
               <h1>Welcome back, {user?.full_name}!</h1>
               <p>
                 {ojtProfile
-                  ? `Currently placed at ${ojtProfile.company_name}. Keep logging your daily attendance and activities to stay on track.`
-                  : 'Your OJT Student account is active. Set up your host company placement parameters to start tracking your hours.'}
+                  ? `Currently training at ${ojtProfile.company_name}. Keep logging your daily attendance and activities to stay on track.`
+                  : 'Your InternLog workspace is ready. Configure your host company placement details to begin tracking your internship hours.'}
               </p>
             </div>
 
@@ -139,7 +138,7 @@ export default function StudentDashboard() {
 
           <div className="hero-progress-box">
             <div className="hero-progress-header">
-              <span>Cumulative OJT Hours Completion (SRS FR-2.4)</span>
+              <span>Overall Internship Progress</span>
               <span style={{ color: '#FDBA74', fontSize: '0.95rem' }}>
                 {metrics.completion_percentage}% Completed
               </span>
@@ -157,7 +156,7 @@ export default function StudentDashboard() {
         <div className="bento-card bento-spotlight bento-span-4">
           <div>
             <div className="kpi-header">
-              <span className="stat-label">Completion Forecast (FR-2.5)</span>
+              <span className="stat-label">Estimated Completion</span>
               <div className="kpi-icon-box kpi-icon-amber" aria-hidden="true">
                 <svg
                   width="22"
@@ -216,7 +215,7 @@ export default function StudentDashboard() {
           <div className="stat-value">
             {ojtProfile ? `${metrics.required_hours}h` : 'Not Set'}
           </div>
-          <div className="stat-subtext">Mandated OJT target duration</div>
+          <div className="stat-subtext">Target internship duration</div>
         </div>
 
         {/* Bento Tile 4 (Span 3): Hours Rendered */}
@@ -295,7 +294,7 @@ export default function StudentDashboard() {
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
-              <h2>OJT Placement & Student Account</h2>
+              <h2>OJT Placement & Student Profile</h2>
             </div>
             <button
               type="button"
@@ -303,7 +302,7 @@ export default function StudentDashboard() {
               style={{ minHeight: '36px', padding: '0.35rem 0.85rem', fontSize: '0.8rem' }}
               onClick={() => setShowSetupModal(true)}
             >
-              {ojtProfile ? 'Update Parameters' : 'Configure'}
+              {ojtProfile ? 'Edit Details' : 'Configure'}
             </button>
           </div>
 
@@ -317,9 +316,9 @@ export default function StudentDashboard() {
               <span className="info-val">{user?.email}</span>
             </div>
             <div className="info-item">
-              <span className="info-key">Assigned System Role</span>
+              <span className="info-key">Account Role</span>
               <span className="info-val" style={{ color: '#0F766E' }}>
-                Registered OJT Student ({user?.role})
+                OJT Student
               </span>
             </div>
             <div className="info-item">
@@ -346,7 +345,7 @@ export default function StudentDashboard() {
           </div>
         </div>
 
-        {/* Bento Tile 8 (Span 6): Role-Permitted System Modules Card */}
+        {/* Bento Tile 8 (Span 6): Workspace Features & Tools Card */}
         <div className="bento-card bento-span-6">
           <div className="panel-header">
             <div className="panel-title-wrap">
@@ -364,52 +363,51 @@ export default function StudentDashboard() {
                 <rect x="14" y="14" width="7" height="7" />
                 <rect x="3" y="14" width="7" height="7" />
               </svg>
-              <h2>Student Role Modules & Architecture</h2>
+              <h2>Workspace Features & Tools</h2>
             </div>
           </div>
 
           <div className="module-item">
             <div>
-              <div className="module-title">1. User Account & OJT Profile Configuration</div>
+              <div className="module-title">OJT Profile & Placement Tracker</div>
               <div className="module-desc">
-                Bcrypt credential security, JWT session revocation, RBAC guard, and OJT placement
-                onboarding (SRS FR-1.1 to FR-1.5).
+                Manage your host company details, target training hours, work schedule, and
+                completion forecast.
               </div>
             </div>
-            <span className="badge-active">Active • Inc 1</span>
+            <span className="badge-active">Active</span>
           </div>
 
           <div className="module-item">
             <div>
-              <div className="module-title">2. Daily Time In / Time Out Logging</div>
+              <div className="module-title">Daily Time In / Time Out Log</div>
               <div className="module-desc">
-                Record daily attendance timestamps with automatic net rendered hours computation
-                (SRS FR-2.1 to FR-2.5).
+                Record your daily shift timestamps with automatic rendered hours computation.
               </div>
             </div>
-            <span className="badge-upcoming">Increment 2</span>
+            <span className="badge-upcoming">Coming Soon</span>
           </div>
 
           <div className="module-item">
             <div>
-              <div className="module-title">3. Smart Daily Journal with Gemini AI</div>
+              <div className="module-title">Smart Daily Journal & AI Assistant</div>
               <div className="module-desc">
-                Transform informal daily notes into polished journal reflections via Google Gemini
-                API (SRS FR-3.1 to FR-3.5).
+                Write quick daily notes and polish them into formal journal entries with AI
+                assistance.
               </div>
             </div>
-            <span className="badge-upcoming">Increment 2</span>
+            <span className="badge-upcoming">Coming Soon</span>
           </div>
 
           <div className="module-item" style={{ marginBottom: 0 }}>
             <div>
-              <div className="module-title">4. Weekly Report Compilation & PDF Export</div>
+              <div className="module-title">Weekly Reports & Printable PDF Export</div>
               <div className="module-desc">
-                Compile weekly logs into printable PDF reports with automated Brevo email reminders
-                (SRS FR-4.1 to FR-5.5).
+                Compile your weekly logs into school-ready PDF reports with automated email
+                reminders.
               </div>
             </div>
-            <span className="badge-upcoming">Increment 3</span>
+            <span className="badge-upcoming">Coming Soon</span>
           </div>
         </div>
       </section>

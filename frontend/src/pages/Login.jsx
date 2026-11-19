@@ -78,7 +78,7 @@ export default function Login() {
                   color: '#CCFBF1'
                 }}
               >
-                <span>LIVE OJT PROGRESS PREVIEW</span>
+                <span>LIVE PROGRESS TRACKER</span>
                 <span style={{ color: '#FDBA74' }}>On Track</span>
               </div>
               <div className="preview-metrics-row">
@@ -113,7 +113,7 @@ export default function Login() {
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </span>
-              <span>Custom host company & weekly work schedule onboarding</span>
+              <span>Custom host company & weekly work schedule setup</span>
             </li>
             <li className="showcase-feature-item">
               <span className="feature-check-icon" aria-hidden="true">
@@ -121,7 +121,7 @@ export default function Login() {
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </span>
-              <span>Secure bcrypt-protected student credentials & JWT sessions</span>
+              <span>Encrypted account protection & seamless cloud sync</span>
             </li>
           </ul>
         </aside>
@@ -130,7 +130,7 @@ export default function Login() {
         <section className="auth-form-panel">
           <div className="auth-header">
             <h1>Welcome Back</h1>
-            <p>Sign in with your registered OJT Student credentials</p>
+            <p>Sign in to your InternLog account to continue</p>
           </div>
 
           {error && (
@@ -158,7 +158,7 @@ export default function Login() {
           <form onSubmit={handleSubmit} noValidate>
             <div className="form-group">
               <label className="form-label" htmlFor="email">
-                Student Email Address
+                Email Address
               </label>
               <div className="input-with-icon">
                 <span className="input-icon-left" aria-hidden="true">
@@ -229,7 +229,7 @@ export default function Login() {
               style={{ marginTop: '0.5rem' }}
               disabled={submitting}
             >
-              <span>{submitting ? 'Authenticating...' : 'Sign In to Student Dashboard'}</span>
+              <span>{submitting ? 'Signing In...' : 'Sign In to Dashboard'}</span>
               <svg
                 width="18"
                 height="18"
@@ -248,7 +248,7 @@ export default function Login() {
           </form>
 
           <div className="auth-footer">
-            New to InternLog? <Link to="/register">Create an OJT Student Account</Link>
+            New to InternLog? <Link to="/register">Create an Account</Link>
           </div>
         </section>
       </div>

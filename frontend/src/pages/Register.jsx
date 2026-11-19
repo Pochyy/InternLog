@@ -86,15 +86,15 @@ export default function Register() {
                 <line x1="19" y1="8" x2="19" y2="14" />
                 <line x1="22" y1="11" x2="16" y2="11" />
               </svg>
-              <span>Student Onboarding • Increment 1</span>
+              <span>Student Onboarding</span>
             </div>
 
             <h2 className="showcase-title">
               Start Your OJT Journey with Confidence.
             </h2>
             <p className="showcase-subtitle">
-              Create your Registered OJT Student account in seconds, then configure your host
-              company and required training hours directly from your Bento dashboard.
+              Create your InternLog account in seconds, then configure your host company and
+              required training hours directly from your dashboard.
             </p>
 
             <div className="showcase-bento-preview" aria-hidden="true">
@@ -106,7 +106,7 @@ export default function Register() {
                   marginBottom: '0.5rem'
                 }}
               >
-                DEFAULT ASSIGNED ROLE (SRS SECTION 2.2)
+                ACCOUNT WORKSPACE
               </div>
               <div
                 style={{
@@ -121,10 +121,10 @@ export default function Register() {
               >
                 <div>
                   <div style={{ fontWeight: 800, fontSize: '0.98rem' }}>
-                    Registered OJT Student
+                    OJT Student Workspace
                   </div>
                   <div style={{ fontSize: '0.76rem', color: '#99F6E4' }}>
-                    Full access to Hours Tracker, OJT Setup & Journals
+                    Full access to Hours Tracker, Placement Setup & Journals
                   </div>
                 </div>
                 <span
@@ -137,7 +137,7 @@ export default function Register() {
                     borderRadius: '999px'
                   }}
                 >
-                  student
+                  Student
                 </span>
               </div>
             </div>
@@ -150,7 +150,7 @@ export default function Register() {
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </span>
-              <span>Validated account creation with duplicate email protection</span>
+              <span>Personalized internship hours & completion date forecasting</span>
             </li>
             <li className="showcase-feature-item">
               <span className="feature-check-icon" aria-hidden="true">
@@ -158,7 +158,7 @@ export default function Register() {
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </span>
-              <span>Bcrypt 10-round salted password hashing before SQLite storage</span>
+              <span>End-to-end encrypted account security</span>
             </li>
             <li className="showcase-feature-item">
               <span className="feature-check-icon" aria-hidden="true">
@@ -166,7 +166,7 @@ export default function Register() {
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </span>
-              <span>Instant redirect to your personal OJT Student Dashboard</span>
+              <span>Instant access to your personal OJT dashboard</span>
             </li>
           </ul>
         </aside>
@@ -174,8 +174,8 @@ export default function Register() {
         {/* Right Registration Form Panel */}
         <section className="auth-form-panel">
           <div className="auth-header">
-            <h1>Create Student Account</h1>
-            <p>Complete the required fields below to register for InternLog</p>
+            <h1>Create Your Account</h1>
+            <p>Fill in your details below to get started with InternLog</p>
           </div>
 
           {error && (
@@ -321,7 +321,7 @@ export default function Register() {
               style={{ marginTop: '0.4rem' }}
               disabled={submitting}
             >
-              <span>{submitting ? 'Creating Student Account...' : 'Create OJT Student Account'}</span>
+              <span>{submitting ? 'Creating Account...' : 'Create Account'}</span>
               <svg
                 width="18"
                 height="18"
@@ -340,7 +340,7 @@ export default function Register() {
           </form>
 
           <div className="auth-footer">
-            Already registered? <Link to="/login">Sign In to Your Account</Link>
+            Already have an account? <Link to="/login">Sign In</Link>
           </div>
         </section>
       </div>

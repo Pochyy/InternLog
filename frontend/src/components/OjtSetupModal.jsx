@@ -79,7 +79,8 @@ export default function OjtSetupModal({ existingProfile, onClose, onSaved }) {
               {existingProfile ? 'Update OJT Placement Setup' : 'Configure Your OJT Placement'}
             </h2>
             <p style={{ fontSize: '0.88rem', color: '#475569', marginBottom: '1.25rem' }}>
-              Define your host company and required training parameters (SRS FR-1.4 & FR-1.5).
+              Enter your host company and required training hours to customize your dashboard and
+              completion forecast.
             </p>
           </div>
         </div>
