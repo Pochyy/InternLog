@@ -71,16 +71,24 @@ export default function OjtSetupModal({ existingProfile, onClose, onSaved }) {
   };
 
   return (
-    <div className="modal-backdrop">
+    <div className="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="ojt-modal-title">
       <div className="modal-card">
-        <h2 style={{ color: '#1B365D', marginBottom: '0.35rem' }}>
-          {existingProfile ? 'Update OJT Profile Configuration' : 'Configure Your OJT Details'}
-        </h2>
-        <p style={{ fontSize: '0.88rem', color: '#64748B', marginBottom: '1.25rem' }}>
-          Set up your host company and required training parameters (SRS FR-1.4 & FR-1.5).
-        </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <h2 id="ojt-modal-title" style={{ color: '#134E4A', fontWeight: 800, marginBottom: '0.3rem' }}>
+              {existingProfile ? 'Update OJT Placement Setup' : 'Configure Your OJT Placement'}
+            </h2>
+            <p style={{ fontSize: '0.88rem', color: '#475569', marginBottom: '1.25rem' }}>
+              Define your host company and required training parameters (SRS FR-1.4 & FR-1.5).
+            </p>
+          </div>
+        </div>
 
-        {error && <div className="alert alert-error">{error}</div>}
+        {error && (
+          <div className="alert alert-error" role="alert">
+            <span>{error}</span>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -141,6 +149,7 @@ export default function OjtSetupModal({ existingProfile, onClose, onSaved }) {
                     type="button"
                     className={`day-chip ${isSelected ? 'active' : ''}`}
                     onClick={() => toggleDay(day)}
+                    aria-pressed={isSelected}
                   >
                     {day.slice(0, 3)}
                   </button>
@@ -156,7 +165,7 @@ export default function OjtSetupModal({ existingProfile, onClose, onSaved }) {
               </button>
             )}
             <button type="submit" className="btn btn-secondary" disabled={saving}>
-              {saving ? 'Saving...' : 'Save OJT Configuration'}
+              {saving ? 'Saving Configuration...' : 'Save OJT Configuration'}
             </button>
           </div>
         </form>
