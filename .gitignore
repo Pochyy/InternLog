@@ -13,6 +13,9 @@ frontend/build/
 .env.*.local
 backend/.env
 
+# Local SQLite runtime database file (auto-created on startup)
+backend/data/*.db
+
 # Local SRS & Reference Documents (Excluded from repository)
 srs_docs/
 InternLog_Software_Requirements_Specification.docx
