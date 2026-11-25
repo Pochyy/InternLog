@@ -5,13 +5,19 @@ const {
   login,
   logout,
   getMe,
-  changePassword
+  changePassword,
+  forgotPassword,
+  verifyResetToken,
+  resetPassword
 } = require('../controllers/authController');
 const { authenticateToken } = require('../middleware/auth');
 
-// Public authentication endpoints
+// Public authentication & password recovery endpoints
 router.post('/register', register);
 router.post('/login', login);
+router.post('/forgot-password', forgotPassword);
+router.get('/verify-reset-token', verifyResetToken);
+router.post('/reset-password', resetPassword);
 
 // Protected session & credential management endpoints
 router.post('/logout', authenticateToken, logout);

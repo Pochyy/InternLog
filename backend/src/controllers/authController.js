@@ -359,10 +359,250 @@ async function changePassword(req, res) {
   }
 }
 
+const RESET_TOKEN_TTL_MINUTES = 15;
+
+function hashResetToken(rawToken) {
+  return crypto.createHash('sha256').update(String(rawToken)).digest('hex');
+}
+
+/**
+ * POST /api/auth/forgot-password
+ * Verifies student account identity by registered email and issues a cryptographically
+ * secure, single-use, 15-minute expiring recovery token (stored hashed with SHA-256).
+ */
+function forgotPassword(req, res) {
+  try {
+    const { email } = req.body;
+
+    if (!email || !String(email).trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please enter your registered email address.'
+      });
+    }
+
+    const trimmedEmail = String(email).trim().toLowerCase();
+    if (!EMAIL_REGEX.test(trimmedEmail)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please enter a valid email address.'
+      });
+    }
+
+    const user = queryOne(
+      'SELECT user_id, email, full_name FROM users WHERE LOWER(email) = ?',
+      [trimmedEmail]
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'No registered student account was found with that email address.'
+      });
+    }
+
+    const now = new Date();
+    const nowIso = now.toISOString();
+
+    // Invalidate any prior unused reset tokens for this user
+    execute(
+      'UPDATE password_reset_tokens SET used_at = ? WHERE user_id = ? AND used_at IS NULL',
+      [nowIso, user.user_id]
+    );
+
+    // Generate cryptographically random 32-byte single-use recovery token
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const tokenHash = hashResetToken(rawToken);
+    const resetId = crypto.randomUUID();
+    const expiresAt = new Date(
+      now.getTime() + RESET_TOKEN_TTL_MINUTES * 60 * 1000
+    ).toISOString();
+
+    execute(
+      `INSERT INTO password_reset_tokens (reset_id, user_id, token_hash, expires_at, used_at, created_at)
+       VALUES (?, ?, ?, ?, NULL, ?)`,
+      [resetId, user.user_id, tokenHash, expiresAt, nowIso]
+    );
+
+    const resetPath = `/reset-password?token=${rawToken}`;
+    console.log(`[InternLog Password Recovery] Student: ${user.email} | Reset Path: ${resetPath} | Expires: ${expiresAt}`);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Password recovery token generated. Use the recovery link below within 15 minutes.',
+      data: {
+        email: user.email,
+        dev_reset: {
+          reset_token: rawToken,
+          reset_path: resetPath,
+          expires_in_minutes: RESET_TOKEN_TTL_MINUTES,
+          expires_at: expiresAt
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'An error occurred while initiating password recovery.'
+    });
+  }
+}
+
+/**
+ * GET /api/auth/verify-reset-token?token=...
+ * Validates whether a recovery token exists, is unused, and has not expired.
+ */
+function verifyResetToken(req, res) {
+  try {
+    const rawToken = req.query.token ? String(req.query.token).trim() : '';
+    if (!rawToken) {
+      return res.status(400).json({
+        success: false,
+        message: 'Recovery token is required.'
+      });
+    }
+
+    const tokenHash = hashResetToken(rawToken);
+    const record = queryOne(
+      `SELECT prt.reset_id, prt.user_id, prt.expires_at, prt.used_at, u.email, u.full_name
+       FROM password_reset_tokens prt
+       JOIN users u ON u.user_id = prt.user_id
+       WHERE prt.token_hash = ?`,
+      [tokenHash]
+    );
+
+    if (!record) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or unrecognized password recovery token.'
+      });
+    }
+
+    if (record.used_at) {
+      return res.status(400).json({
+        success: false,
+        message: 'This password recovery link has already been used. Please request a new one.'
+      });
+    }
+
+    if (new Date(record.expires_at) <= new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: 'This password recovery token has expired. Please request a new one.'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        email: record.email,
+        full_name: record.full_name,
+        expires_at: record.expires_at
+      }
+    });
+  } catch (error) {
+    console.error('Verify reset token error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Unable to verify recovery token.'
+    });
+  }
+}
+
+/**
+ * POST /api/auth/reset-password
+ * Resets a student's password using a valid, unexpired, single-use recovery token.
+ * Hashes the new password with bcrypt (10 salt rounds) and consumes the token.
+ */
+async function resetPassword(req, res) {
+  try {
+    const { token, new_password, confirm_password } = req.body;
+
+    if (!token || !new_password || confirm_password === undefined || confirm_password === '') {
+      return res.status(400).json({
+        success: false,
+        message: 'Recovery token, new password, and password confirmation are all required.'
+      });
+    }
+
+    if (String(new_password).length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password must be at least 6 characters long.'
+      });
+    }
+
+    if (String(new_password) !== String(confirm_password)) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password and confirmation password do not match.'
+      });
+    }
+
+    const tokenHash = hashResetToken(String(token).trim());
+    const record = queryOne(
+      'SELECT reset_id, user_id, expires_at, used_at FROM password_reset_tokens WHERE token_hash = ?',
+      [tokenHash]
+    );
+
+    if (!record) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or unrecognized password recovery token.'
+      });
+    }
+
+    if (record.used_at) {
+      return res.status(400).json({
+        success: false,
+        message: 'This password recovery token has already been used. Please request a new recovery link.'
+      });
+    }
+
+    if (new Date(record.expires_at) <= new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: 'This password recovery token has expired. Please request a new recovery link.'
+      });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const newPasswordHash = await bcrypt.hash(String(new_password), salt);
+    const nowIso = new Date().toISOString();
+
+    execute('UPDATE users SET password_hash = ?, updated_at = ? WHERE user_id = ?', [
+      newPasswordHash,
+      nowIso,
+      record.user_id
+    ]);
+
+    // Mark token consumed (single-use enforcement)
+    execute('UPDATE password_reset_tokens SET used_at = ? WHERE reset_id = ?', [
+      nowIso,
+      record.reset_id
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Your password has been reset successfully. You can now sign in with your new password.'
+    });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'An error occurred while resetting your password.'
+    });
+  }
+}
+
 module.exports = {
   register,
   login,
   logout,
   getMe,
-  changePassword
+  changePassword,
+  forgotPassword,
+  verifyResetToken,
+  resetPassword
 };

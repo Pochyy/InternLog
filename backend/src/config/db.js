@@ -99,6 +99,19 @@ async function initDB() {
     );
   `);
 
+  // Create PASSWORD_RESET_TOKENS table for expiring, single-use password recovery (Increment 2)
+  dbInstance.run(`
+    CREATE TABLE IF NOT EXISTS password_reset_tokens (
+      reset_id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      token_hash TEXT UNIQUE NOT NULL,
+      expires_at TEXT NOT NULL,
+      used_at TEXT,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    );
+  `);
+
   saveDatabase();
   return dbInstance;
 }

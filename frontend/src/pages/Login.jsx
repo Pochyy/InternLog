@@ -181,9 +181,29 @@ export default function Login() {
             </div>
 
             <div className="form-group">
-              <label className="form-label" htmlFor="password">
-                Password
-              </label>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '0.4rem'
+                }}
+              >
+                <label className="form-label" htmlFor="password" style={{ marginBottom: 0 }}>
+                  Password
+                </label>
+                <Link
+                  to="/forgot-password"
+                  style={{
+                    fontSize: '0.83rem',
+                    fontWeight: 700,
+                    color: 'var(--color-primary-hover)',
+                    textDecoration: 'none'
+                  }}
+                >
+                  Forgot Password?
+                </Link>
+              </div>
               <div className="input-with-icon">
                 <span className="input-icon-left" aria-hidden="true">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
