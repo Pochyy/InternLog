@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { apiRequest } from '../api';
+import ChangePasswordCard from '../components/ChangePasswordCard';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const STUDENT_ID_REGEX = /^[A-Za-z0-9-]{4,30}$/;
@@ -559,80 +560,105 @@ export default function UserProfile() {
           )}
         </div>
 
-        {/* Right Column (Span 5): Internship Placement Summary & Data Privacy */}
-        <div className="bento-card bento-span-5" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <div>
-            <div className="panel-header">
-              <div className="panel-title-wrap">
+        {/* Right Column (Span 5): Change Password & Linked OJT Placement */}
+        <div
+          className="bento-span-5"
+          style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
+        >
+          <ChangePasswordCard />
+
+          <div
+            className="bento-card"
+            style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
+          >
+            <div>
+              <div className="panel-header">
+                <div className="panel-title-wrap">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#0D9488"
+                    strokeWidth="2.2"
+                    aria-hidden="true"
+                  >
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                  </svg>
+                  <h2>Linked OJT Placement</h2>
+                </div>
+                <Link
+                  to="/dashboard"
+                  className="btn btn-ghost"
+                  style={{ minHeight: '34px', padding: '0.3rem 0.75rem', fontSize: '0.78rem' }}
+                >
+                  Manage on Dashboard
+                </Link>
+              </div>
+
+              <div className="info-list">
+                <div className="info-item">
+                  <span className="info-key">Host Company</span>
+                  <span className="info-val">
+                    {ojtProfile?.company_name || 'Not configured yet'}
+                  </span>
+                </div>
+                <div className="info-item">
+                  <span className="info-key">Required Hours</span>
+                  <span className="info-val">
+                    {ojtProfile ? `${ojtProfile.required_hours} hrs` : '—'}
+                  </span>
+                </div>
+                <div className="info-item">
+                  <span className="info-key">Official Start Date</span>
+                  <span className="info-val">{ojtProfile?.start_date || '—'}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-key">Estimated Completion</span>
+                  <span className="info-val" style={{ color: '#EA580C' }}>
+                    {ojtProfile?.estimated_completion_date || 'Pending Setup'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div
+              style={{
+                padding: '1rem 1.1rem',
+                borderRadius: '14px',
+                background: '#F0FDFA',
+                border: '1px solid var(--color-border)',
+                fontSize: '0.84rem',
+                color: 'var(--color-foreground)'
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  fontWeight: 800,
+                  marginBottom: '0.3rem'
+                }}
+              >
                 <svg
-                  width="20"
-                  height="20"
+                  width="16"
+                  height="16"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="#0D9488"
-                  strokeWidth="2.2"
-                  aria-hidden="true"
+                  strokeWidth="2.3"
                 >
-                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
-                <h2>Linked OJT Placement</h2>
+                <span>Profile Ownership & Security</span>
               </div>
-              <Link
-                to="/dashboard"
-                className="btn btn-ghost"
-                style={{ minHeight: '34px', padding: '0.3rem 0.75rem', fontSize: '0.78rem' }}
-              >
-                Manage on Dashboard
-              </Link>
+              <p style={{ color: '#475569', lineHeight: 1.55 }}>
+                Your profile is protected by strict row-level authorization. Only your authenticated
+                student session can view or modify your personal information.
+              </p>
             </div>
-
-            <div className="info-list">
-              <div className="info-item">
-                <span className="info-key">Host Company</span>
-                <span className="info-val">
-                  {ojtProfile?.company_name || 'Not configured yet'}
-                </span>
-              </div>
-              <div className="info-item">
-                <span className="info-key">Required Hours</span>
-                <span className="info-val">
-                  {ojtProfile ? `${ojtProfile.required_hours} hrs` : '—'}
-                </span>
-              </div>
-              <div className="info-item">
-                <span className="info-key">Official Start Date</span>
-                <span className="info-val">{ojtProfile?.start_date || '—'}</span>
-              </div>
-              <div className="info-item">
-                <span className="info-key">Estimated Completion</span>
-                <span className="info-val" style={{ color: '#EA580C' }}>
-                  {ojtProfile?.estimated_completion_date || 'Pending Setup'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div
-            style={{
-              padding: '1rem 1.1rem',
-              borderRadius: '14px',
-              background: '#F0FDFA',
-              border: '1px solid var(--color-border)',
-              fontSize: '0.84rem',
-              color: 'var(--color-foreground)'
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, marginBottom: '0.3rem' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0D9488" strokeWidth="2.3">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
-              <span>Profile Ownership & Security</span>
-            </div>
-            <p style={{ color: '#475569', lineHeight: 1.55 }}>
-              Your profile is protected by strict row-level authorization. Only your authenticated
-              student session can view or modify your personal information.
-            </p>
           </div>
         </div>
       </section>
