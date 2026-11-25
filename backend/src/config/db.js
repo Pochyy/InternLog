@@ -1,5 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 const initSqlJs = require('sql.js');
 
 const DATA_DIR = path.join(__dirname, '../../data');
@@ -111,6 +113,61 @@ async function initDB() {
       FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
     );
   `);
+
+  // Seed default test student account idempotently for out-of-the-box evaluation
+  const demoCheckStmt = dbInstance.prepare(
+    'SELECT user_id FROM users WHERE LOWER(email) = ?'
+  );
+  demoCheckStmt.bind(['student.demo@internlog.edu.ph']);
+  const demoExists = demoCheckStmt.step();
+  demoCheckStmt.free();
+
+  if (!demoExists) {
+    const demoUserId = crypto.randomUUID();
+    const demoHash = bcrypt.hashSync('InternLog2026!', 10);
+    const nowIso = new Date().toISOString();
+    const demoAvatar =
+      'https://ui-avatars.com/api/?name=Vinzent+Lariosa&background=0D9488&color=fff';
+
+    dbInstance.run(
+      `INSERT INTO users (
+         user_id, email, full_name, password_hash, role, profile_picture_url,
+         student_id_number, contact_number, academic_program, created_at, updated_at, last_login_at
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        demoUserId,
+        'student.demo@internlog.edu.ph',
+        'Vinzent Emmanuel M. Lariosa',
+        demoHash,
+        'student',
+        demoAvatar,
+        '22-4518-892',
+        '+63 917 555 0192',
+        'BS in Information Technology',
+        nowIso,
+        nowIso,
+        nowIso
+      ]
+    );
+
+    dbInstance.run(
+      `INSERT INTO ojt_profiles (
+         profile_id, user_id, company_name, required_hours, rendered_hours,
+         start_date, working_days, estimated_completion_date, updated_at
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        crypto.randomUUID(),
+        demoUserId,
+        'Accenture Technology Solutions PH',
+        486,
+        120,
+        '2026-11-03',
+        'Monday,Tuesday,Wednesday,Thursday,Friday',
+        '2027-02-09',
+        nowIso
+      ]
+    );
+  }
 
   saveDatabase();
   return dbInstance;

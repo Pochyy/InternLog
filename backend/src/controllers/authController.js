@@ -79,11 +79,11 @@ async function register(req, res) {
       [userId, trimmedEmail, trimmedName, passwordHash, role, avatarUrl, now, now, now]
     );
 
-    // 6. Generate JWT session token
+    // 6. Generate JWT session token with unique jti
     const token = jwt.sign(
       { user_id: userId, email: trimmedEmail, role },
       JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+      { expiresIn: process.env.JWT_EXPIRES_IN || '24h', jwtid: crypto.randomUUID() }
     );
 
     return res.status(201).json({
@@ -163,7 +163,7 @@ async function login(req, res) {
     const token = jwt.sign(
       { user_id: user.user_id, email: user.email, role: user.role },
       JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+      { expiresIn: process.env.JWT_EXPIRES_IN || '24h', jwtid: crypto.randomUUID() }
     );
 
     return res.status(200).json({
@@ -340,7 +340,7 @@ async function changePassword(req, res) {
     const rotatedToken = jwt.sign(
       { user_id: userRecord.user_id, email: userRecord.email, role: userRecord.role },
       JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+      { expiresIn: process.env.JWT_EXPIRES_IN || '24h', jwtid: crypto.randomUUID() }
     );
 
     return res.status(200).json({
