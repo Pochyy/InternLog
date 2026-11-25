@@ -44,7 +44,7 @@
      - **User Schema Extensions:** Extend `users` table with `student_id_number`, `contact_number`, and `academic_program` alongside existing profile fields.
   4. Prepared step-by-step incremental development, testing, and Git commit/push protocol.
   5. Established requirements for generating `docs/Increment-2-Completion-Report.pdf` from the official report template.
-* **Active Status:** Increment 2 Feature 1 (`feature/user-profile-management`) and Feature 2 (`feature/change-password`) built, verified, and pushed. Proceeding to Feature 3 (`feature/reset-password`).
+* **Active Status:** All three Increment 2 feature branches (`feature/user-profile-management`, `feature/change-password`, `feature/reset-password`) built, tested, and pushed to remote. Proceeding to merge into `main` and generate `docs/Increment-2-Completion-Report.pdf`.
 
 ### Session 3: Increment 2 Execution — Feature-by-Feature Build, Verification & Git Pushes
 * **Timestamp:** 2026-11-25
@@ -56,7 +56,12 @@
 * **Feature 2 (`feature/change-password`) — Completed & Verified:**
   - Implemented `PUT / POST /api/auth/change-password` in `authController.js` verifying `current_password` via `bcrypt.compare`, enforcing length/confirmation/non-reuse rules, hashing `new_password` with 10 salt rounds, revoking prior JWT, and rotating session token.
   - Built `frontend/src/components/ChangePasswordCard.jsx` and integrated it into `UserProfile.jsx` and `AuthContext.jsx`.
-  - Verified all 11 security & validation assertions including old password invalidation.
+  - Verified all 11 security & validation assertions including old password invalidation. Pushed branch (`a1a05ea`).
+* **Feature 3 (`feature/reset-password`) — Completed & Verified:**
+  - Added `password_reset_tokens` table in SQLite storing SHA-256 `token_hash`, 15-minute `expires_at`, and `used_at` single-use timestamp.
+  - Implemented `POST /api/auth/forgot-password`, `GET /api/auth/verify-reset-token`, and `POST /api/auth/reset-password`.
+  - Built Split-Screen `ForgotPassword.jsx` (with Developer Recovery Notification Banner & copyable token/direct reset button) and `ResetPassword.jsx`, plus added `"Forgot Password?"` link on `Login.jsx`.
+  - Verified SHA-256 at-rest storage, expiration rejection, prior-token invalidation, single-use enforcement, and bcrypt login transition.
 
 ---
 
