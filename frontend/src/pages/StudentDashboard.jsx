@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { apiRequest } from '../api';
 import OjtSetupModal from '../components/OjtSetupModal';
@@ -296,14 +297,23 @@ export default function StudentDashboard() {
               </svg>
               <h2>OJT Placement & Student Profile</h2>
             </div>
-            <button
-              type="button"
-              className="btn btn-ghost"
-              style={{ minHeight: '36px', padding: '0.35rem 0.85rem', fontSize: '0.8rem' }}
-              onClick={() => setShowSetupModal(true)}
-            >
-              {ojtProfile ? 'Edit Details' : 'Configure'}
-            </button>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <Link
+                to="/profile"
+                className="btn btn-ghost"
+                style={{ minHeight: '36px', padding: '0.35rem 0.85rem', fontSize: '0.8rem' }}
+              >
+                Manage Account
+              </Link>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                style={{ minHeight: '36px', padding: '0.35rem 0.85rem', fontSize: '0.8rem' }}
+                onClick={() => setShowSetupModal(true)}
+              >
+                {ojtProfile ? 'Edit OJT' : 'Configure OJT'}
+              </button>
+            </div>
           </div>
 
           <div className="info-list">
@@ -316,10 +326,12 @@ export default function StudentDashboard() {
               <span className="info-val">{user?.email}</span>
             </div>
             <div className="info-item">
-              <span className="info-key">Account Role</span>
-              <span className="info-val" style={{ color: '#0F766E' }}>
-                OJT Student
-              </span>
+              <span className="info-key">Student ID Number</span>
+              <span className="info-val">{user?.student_id_number || 'Not set'}</span>
+            </div>
+            <div className="info-item">
+              <span className="info-key">Academic Program</span>
+              <span className="info-val">{user?.academic_program || 'Not set'}</span>
             </div>
             <div className="info-item">
               <span className="info-key">Host Company Name</span>
@@ -373,6 +385,16 @@ export default function StudentDashboard() {
               <div className="module-desc">
                 Manage your host company details, target training hours, work schedule, and
                 completion forecast.
+              </div>
+            </div>
+            <span className="badge-active">Active</span>
+          </div>
+
+          <div className="module-item">
+            <div>
+              <div className="module-title">Student Account & Security Management</div>
+              <div className="module-desc">
+                Update your student ID, contact number, academic program, and account credentials.
               </div>
             </div>
             <span className="badge-active">Active</span>

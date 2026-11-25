@@ -35,7 +35,7 @@ async function initDB() {
 
   dbInstance.run('PRAGMA foreign_keys = ON;');
 
-  // Create USERS table aligned with SRS Section 5.1 ERD & Increment 1 Auth specs
+  // Create USERS table aligned with SRS Section 5.1 ERD & Increment 1/2 Auth & Profile specs
   dbInstance.run(`
     CREATE TABLE IF NOT EXISTS users (
       user_id TEXT PRIMARY KEY,
@@ -45,10 +45,35 @@ async function initDB() {
       password_hash TEXT NOT NULL,
       role TEXT NOT NULL DEFAULT 'student',
       profile_picture_url TEXT,
+      student_id_number TEXT,
+      contact_number TEXT,
+      academic_program TEXT,
       created_at TEXT NOT NULL,
+      updated_at TEXT,
       last_login_at TEXT
     );
   `);
+
+  // Non-destructive migration for existing Increment 1 SQLite databases
+  const userColsStmt = dbInstance.prepare('PRAGMA table_info(users);');
+  const existingUserCols = new Set();
+  while (userColsStmt.step()) {
+    const col = userColsStmt.getAsObject();
+    existingUserCols.add(col.name);
+  }
+  userColsStmt.free();
+
+  const profileMigrations = [
+    ['student_id_number', 'TEXT'],
+    ['contact_number', 'TEXT'],
+    ['academic_program', 'TEXT'],
+    ['updated_at', 'TEXT']
+  ];
+  for (const [colName, colType] of profileMigrations) {
+    if (!existingUserCols.has(colName)) {
+      dbInstance.run(`ALTER TABLE users ADD COLUMN ${colName} ${colType};`);
+    }
+  }
 
   // Create OJT_PROFILES table aligned with SRS Section 3.1 (FR-1.4, FR-1.5) & Section 5.1 ERD
   dbInstance.run(`

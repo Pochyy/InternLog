@@ -44,7 +44,15 @@
      - **User Schema Extensions:** Extend `users` table with `student_id_number`, `contact_number`, and `academic_program` alongside existing profile fields.
   4. Prepared step-by-step incremental development, testing, and Git commit/push protocol.
   5. Established requirements for generating `docs/Increment-2-Completion-Report.pdf` from the official report template.
-* **Active Status:** Fully aligned with user specifications. Paused and awaiting the user's explicit "Proceed" command before initiating code builds.
+* **Active Status:** Increment 2 Feature 1 (`feature/user-profile-management`) built, verified, and pushed. Proceeding to Feature 2 (`feature/change-password`).
+
+### Session 3: Increment 2 Execution — Feature-by-Feature Build, Verification & Git Pushes
+* **Timestamp:** 2026-11-25
+* **Feature 1 (`feature/user-profile-management`) — Completed & Verified:**
+  - Extended `users` SQLite schema (`student_id_number`, `contact_number`, `academic_program`, `updated_at`) with automatic non-destructive `ALTER TABLE` migration in `backend/src/config/db.js`.
+  - Created `backend/src/controllers/userController.js` and `backend/src/routes/userRoutes.js` (`/api/users/profile` & `/api/users/:userId`) enforcing strict row-level authorization (`403 Forbidden` on cross-user access), format validation, and duplicate email/student ID checks (`409 Conflict`).
+  - Built `frontend/src/pages/UserProfile.jsx` in Pro Max Bento Grid layout with View/Edit modes, updated `Navbar.jsx`, `StudentDashboard.jsx`, and `AuthContext.jsx`.
+  - Passed full API integration suite & Vite production build.
 
 ---
 

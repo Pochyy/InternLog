@@ -71,6 +71,19 @@ export function AuthProvider({ children }) {
     return res;
   };
 
+  const updateUserProfile = async (profilePayload) => {
+    const res = await apiRequest('/users/profile', {
+      method: 'PUT',
+      body: JSON.stringify(profilePayload)
+    });
+
+    if (res.success && res.data?.user) {
+      setUser(res.data.user);
+    }
+
+    return res;
+  };
+
   const logout = async () => {
     try {
       await apiRequest('/auth/logout', { method: 'POST' });
@@ -87,12 +100,14 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         user,
+        setUser,
         ojtProfile,
         setOjtProfile,
         loading,
         isAuthenticated: !!user,
         register,
         login,
+        updateUserProfile,
         logout
       }}
     >

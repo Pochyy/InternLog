@@ -74,9 +74,9 @@ async function register(req, res) {
 
     // 5. Store user information in database
     execute(
-      `INSERT INTO users (user_id, email, full_name, password_hash, role, profile_picture_url, created_at, last_login_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [userId, trimmedEmail, trimmedName, passwordHash, role, avatarUrl, now, now]
+      `INSERT INTO users (user_id, email, full_name, password_hash, role, profile_picture_url, created_at, updated_at, last_login_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [userId, trimmedEmail, trimmedName, passwordHash, role, avatarUrl, now, now, now]
     );
 
     // 6. Generate JWT session token
@@ -97,7 +97,11 @@ async function register(req, res) {
           email: trimmedEmail,
           role,
           profile_picture_url: avatarUrl,
+          student_id_number: null,
+          contact_number: null,
+          academic_program: null,
           created_at: now,
+          updated_at: now,
           last_login_at: now
         },
         ojt_profile: null
@@ -130,7 +134,9 @@ async function login(req, res) {
     const trimmedEmail = String(email).trim().toLowerCase();
 
     const user = queryOne(
-      'SELECT user_id, email, full_name, password_hash, role, profile_picture_url, created_at FROM users WHERE LOWER(email) = ?',
+      `SELECT user_id, email, full_name, password_hash, role, profile_picture_url,
+              student_id_number, contact_number, academic_program, created_at, updated_at
+       FROM users WHERE LOWER(email) = ?`,
       [trimmedEmail]
     );
 
@@ -171,7 +177,11 @@ async function login(req, res) {
           email: user.email,
           role: user.role,
           profile_picture_url: user.profile_picture_url,
+          student_id_number: user.student_id_number || null,
+          contact_number: user.contact_number || null,
+          academic_program: user.academic_program || null,
           created_at: user.created_at,
+          updated_at: user.updated_at || user.created_at,
           last_login_at: now
         },
         ojt_profile: ojtProfile || null

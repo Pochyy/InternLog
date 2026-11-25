@@ -4,6 +4,7 @@ const cors = require('cors');
 const { initDB } = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -24,6 +25,7 @@ app.get('/api/health', (req, res) => {
 // Core API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/users', userRoutes);
 
 // 404 handler for unknown endpoints
 app.use((req, res) => {

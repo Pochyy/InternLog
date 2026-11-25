@@ -6,6 +6,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import StudentDashboard from './pages/StudentDashboard';
+import UserProfile from './pages/UserProfile';
 
 export default function App() {
   return (
@@ -20,6 +21,14 @@ export default function App() {
             element={
               <ProtectedRoute allowedRoles={['student']}>
                 <StudentDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <UserProfile />
               </ProtectedRoute>
             }
           />
