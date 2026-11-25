@@ -1,7 +1,7 @@
 # InternLog: A Smart OJT Journal and Hours Tracking System
 
 **Course:** IT342 — Systems Integration and Architecture 1  
-**Deliverable:** Project Development Increment 1 — Core User Accounts, Authentication, and Role-Based Dashboard
+**Deliverable:** Project Development Increment 2 — User Profile Management, Reset Password, and Change Password (extending Increment 1 Core Auth & Dashboard)
 
 ---
 
@@ -35,6 +35,24 @@ In strict alignment with the approved **InternLog Software Requirements Specific
 * **OJT Onboarding & Profile Configuration (SRS `FR-1.4` & `FR-1.5`):** Prompts newly registered students to configure their **Host Company Name**, **Total Required Hours**, **Official Start Date**, and **Weekly Working Days**, with full edit capability at any time.
 * **Hours & Progress Metrics Overview (SRS `FR-2.4` & `FR-2.5`):** Dynamically computes and displays Total Required Hours, Hours Rendered, Hours Remaining, Completion Percentage, and an Estimated Completion Date based on scheduled working days.
 * **Role-Based Access Control (RBAC):** Enforces `requireRole('student')` on backend routes and `allowedRoles={['student']}` on frontend routes.
+
+---
+
+## 2B. Project Development Increment 2 — Implemented Features
+
+### 2B.1. User Profile Management (`GET / PUT /api/users/profile`, `/profile`)
+* **View & Edit Student Profile:** Dedicated Bento Grid profile workspace (`/profile`) allowing authenticated students to view and update their **Full Name**, **Email Address**, **Student ID Number**, **Contact / Phone Number**, **Academic Program / Department**, and **Custom Avatar URL**.
+* **Input Validation & Uniqueness:** Enforces client-side and server-side validation rules and prevents duplicate emails or Student ID numbers across accounts (`409 Conflict`).
+* **Strict Row-Level Isolation:** Blocks unauthorized read/write attempts targeting another user's `user_id` (`403 Forbidden`).
+
+### 2B.2. Reset Password / Forgot Password (`POST /api/auth/forgot-password`, `POST /api/auth/reset-password`)
+* **Login Recovery Entry:** Accessible via **Forgot Password?** directly from `/login` (`/forgot-password`).
+* **Cryptographic Expiring Single-Use Tokens:** Generates 256-bit random tokens, invalidates prior unused tokens, stores only SHA-256 digests (`token_hash`) in `password_reset_tokens` with a **15-minute expiration**, and displays a developer recovery notification banner with a direct reset link for zero-SMTP local testing.
+* **Secure Password Reset:** Validates token existence, expiry, and single-use state (`used_at`), hashes the new password with 10-round `bcryptjs`, and permanently consumes the token.
+
+### 2B.3. Authenticated Change Password (`PUT /api/auth/change-password`)
+* **Current Password Verification:** Requires authenticated students to verify their active password via `bcrypt.compare` before setting a new password.
+* **Credential Validation & Rotation:** Validates minimum password length ($\ge 6$ chars), confirmation match, and non-reuse of the old password, overwrites `password_hash` so the previous password can never authenticate again, revokes the prior JWT, and rotates the active session token.
 
 ---
 
@@ -149,5 +167,20 @@ The React development server will start on **`http://localhost:5173`**.
 | `POST` | `/api/auth/login` | Public | Authenticate student credentials & receive JWT session token |
 | `POST` | `/api/auth/logout` | Protected | Revoke active JWT token and terminate session |
 | `GET` | `/api/auth/me` | Protected | Retrieve current authenticated student and OJT profile |
+| `PUT` | `/api/auth/change-password` | Protected | Verify current password, update bcrypt hash, and rotate JWT |
+| `POST` | `/api/auth/forgot-password` | Public | Verify email & issue single-use 15-min SHA-256 reset token |
+| `GET` | `/api/auth/verify-reset-token` | Public | Verify whether a password recovery token is valid and unexpired |
+| `POST` | `/api/auth/reset-password` | Public | Consume single-use token and store new bcrypt password hash |
+| `GET` | `/api/users/profile` | Protected (`student`) | Retrieve authenticated student's personal & academic profile |
+| `PUT` | `/api/users/profile` | Protected (`student`) | Update own student profile (blocks cross-user modifications) |
 | `GET` | `/api/profile` | Protected (`student`) | Retrieve OJT profile and calculated hours progress metrics |
 | `PUT` | `/api/profile` | Protected (`student`) | Create or update OJT placement parameters |
+
+---
+
+## 7. Pre-Seeded Test Account
+
+On initial startup, the SQLite initializer (`backend/src/config/db.js`) idempotently seeds a ready-to-use student test account:
+* **Email:** `student.demo@internlog.edu.ph`
+* **Password:** `InternLog2026!`
+* **Role:** `Registered OJT Student (student)`

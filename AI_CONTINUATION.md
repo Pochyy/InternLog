@@ -44,24 +44,26 @@
      - **User Schema Extensions:** Extend `users` table with `student_id_number`, `contact_number`, and `academic_program` alongside existing profile fields.
   4. Prepared step-by-step incremental development, testing, and Git commit/push protocol.
   5. Established requirements for generating `docs/Increment-2-Completion-Report.pdf` from the official report template.
-* **Active Status:** All three Increment 2 feature branches (`feature/user-profile-management`, `feature/change-password`, `feature/reset-password`) built, tested, and pushed to remote. Proceeding to merge into `main` and generate `docs/Increment-2-Completion-Report.pdf`.
+* **Active Status:** Increment 2 100% Complete, tested, merged into `main`, documented in `docs/Increment-2-Completion-Report.pdf`, and pushed to GitHub (`origin/main` + feature branches). Ready for Increment 3 (Daily Time Logging & Smart AI Journal).
 
-### Session 3: Increment 2 Execution — Feature-by-Feature Build, Verification & Git Pushes
+### Session 3: Increment 2 Execution — Feature-by-Feature Build, Verification, Report & Final Push
 * **Timestamp:** 2026-11-25
-* **Feature 1 (`feature/user-profile-management`) — Completed & Verified:**
+* **Feature 1 (`feature/user-profile-management`) — Completed, Verified & Pushed (`8a63414` -> merged `470cf95`):**
   - Extended `users` SQLite schema (`student_id_number`, `contact_number`, `academic_program`, `updated_at`) with automatic non-destructive `ALTER TABLE` migration in `backend/src/config/db.js`.
   - Created `backend/src/controllers/userController.js` and `backend/src/routes/userRoutes.js` (`/api/users/profile` & `/api/users/:userId`) enforcing strict row-level authorization (`403 Forbidden` on cross-user access), format validation, and duplicate email/student ID checks (`409 Conflict`).
   - Built `frontend/src/pages/UserProfile.jsx` in Pro Max Bento Grid layout with View/Edit modes, updated `Navbar.jsx`, `StudentDashboard.jsx`, and `AuthContext.jsx`.
-  - Passed full API integration suite & Vite production build. Pushed branch (`8a63414`).
-* **Feature 2 (`feature/change-password`) — Completed & Verified:**
+* **Feature 2 (`feature/change-password`) — Completed, Verified & Pushed (`a1a05ea` -> merged `775bea9`):**
   - Implemented `PUT / POST /api/auth/change-password` in `authController.js` verifying `current_password` via `bcrypt.compare`, enforcing length/confirmation/non-reuse rules, hashing `new_password` with 10 salt rounds, revoking prior JWT, and rotating session token.
   - Built `frontend/src/components/ChangePasswordCard.jsx` and integrated it into `UserProfile.jsx` and `AuthContext.jsx`.
-  - Verified all 11 security & validation assertions including old password invalidation. Pushed branch (`a1a05ea`).
-* **Feature 3 (`feature/reset-password`) — Completed & Verified:**
+* **Feature 3 (`feature/reset-password`) — Completed, Verified & Pushed (`a4508b9` -> merged `8e1bbac`):**
   - Added `password_reset_tokens` table in SQLite storing SHA-256 `token_hash`, 15-minute `expires_at`, and `used_at` single-use timestamp.
   - Implemented `POST /api/auth/forgot-password`, `GET /api/auth/verify-reset-token`, and `POST /api/auth/reset-password`.
   - Built Split-Screen `ForgotPassword.jsx` (with Developer Recovery Notification Banner & copyable token/direct reset button) and `ResetPassword.jsx`, plus added `"Forgot Password?"` link on `Login.jsx`.
-  - Verified SHA-256 at-rest storage, expiration rejection, prior-token invalidation, single-use enforcement, and bcrypt login transition.
+* **Main Integration, Hardening & Completion Report:**
+  - Added RFC 7519 `jwtid` (`jti`) claims to all signed JWTs (`424dbec`) so sub-second token rotations always generate distinct tokens.
+  - Added idempotent default test student seeder (`student.demo@internlog.edu.ph` / `InternLog2026!`) in `backend/src/config/db.js`.
+  - Captured 10 live browser screenshots via Playwright and compiled `docs/Increment-2-Completion-Report.pdf` matching the official IT342 PD2 report template.
+  - Updated `README.md`, `PROJECT_SUMMARY.md`, and `AI_CONTINUATION.md`, then committed and pushed `main` to `origin/main`.
 
 ---
 
@@ -105,17 +107,19 @@
 The database is defined in `backend/src/config/db.js`.
 
 1. **`users` Table:**
-   * Columns: `user_id` (TEXT PK), `google_id` (TEXT UNIQUE), `email` (TEXT UNIQUE NOT NULL), `full_name` (TEXT NOT NULL), `password_hash` (TEXT NOT NULL), `role` (TEXT DEFAULT 'student'), `profile_picture_url` (TEXT), `created_at` (TEXT NOT NULL), `last_login_at` (TEXT).
+   * Columns: `user_id` (TEXT PK), `google_id` (TEXT UNIQUE), `email` (TEXT UNIQUE NOT NULL), `full_name` (TEXT NOT NULL), `password_hash` (TEXT NOT NULL), `role` (TEXT DEFAULT 'student'), `profile_picture_url` (TEXT), `student_id_number` (TEXT), `contact_number` (TEXT), `academic_program` (TEXT), `created_at` (TEXT NOT NULL), `updated_at` (TEXT), `last_login_at` (TEXT).
 2. **`ojt_profiles` Table:**
    * Columns: `profile_id` (TEXT PK), `user_id` (TEXT UNIQUE FK -> users), `company_name` (TEXT NOT NULL), `required_hours` (REAL DEFAULT 300), `rendered_hours` (REAL DEFAULT 0), `start_date` (TEXT NOT NULL), `working_days` (TEXT NOT NULL), `estimated_completion_date` (TEXT), `updated_at` (TEXT NOT NULL).
 3. **`revoked_tokens` Table:**
    * Columns: `token` (TEXT PK), `revoked_at` (TEXT NOT NULL).
+4. **`password_reset_tokens` Table:**
+   * Columns: `reset_id` (TEXT PK), `user_id` (TEXT FK -> users), `token_hash` (TEXT UNIQUE NOT NULL), `expires_at` (TEXT NOT NULL), `used_at` (TEXT), `created_at` (TEXT NOT NULL).
 
 ---
 
-## 5. Next Steps & Recommended Increment 2 Roadmap
+## 5. Next Steps & Recommended Increment 3 Roadmap
 
-When instructed by the user to proceed with feature development, the next planned increment is **Project Development Increment 2 (Daily Time Logging & Smart Journal System)**:
+When instructed by the user to proceed with feature development, the next planned increment is **Project Development Increment 3 (Daily Time Logging & Smart Journal System)**:
 
 ### 5.1 Schema Additions Needed for Increment 2
 1. **`daily_time_logs` Table:**

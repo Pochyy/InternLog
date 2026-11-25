@@ -3,8 +3,8 @@
 **Repository:** `https://github.com/Pochyy/InternLog.git`  
 **Course:** IT342 — Systems Integration and Architecture 1  
 **Project Name:** InternLog: A Smart OJT Journal and Hours Tracking System  
-**Current Milestone:** Project Development Increment 1 — Core User Accounts, Authentication, and Role-Based Student Dashboard  
-**Last Updated:** November 2026  
+**Current Milestone:** Project Development Increment 2 — User Profile Management, Reset Password, and Change Password (extending Increment 1 Core Auth & Dashboard)  
+**Last Updated:** November 25, 2026  
 
 ---
 
@@ -222,6 +222,12 @@ Base URL: `http://localhost:5000/api`
 | `POST` | `/auth/login` | Public | None | Authenticate student & receive JWT |
 | `POST` | `/auth/logout` | Protected | `Authorization: Bearer <token>` | Invalidate JWT session in revoked list |
 | `GET` | `/auth/me` | Protected | `Authorization: Bearer <token>` | Get authenticated user info & profile |
+| `PUT` | `/auth/change-password` | Protected | `Authorization: Bearer <token>` | Verify current password, update bcrypt hash & rotate JWT |
+| `POST` | `/auth/forgot-password` | Public | None | Verify email & generate 15-min single-use SHA-256 token |
+| `GET` | `/auth/verify-reset-token` | Public | None | Validate whether recovery token exists, is unused & unexpired |
+| `POST` | `/auth/reset-password` | Public | None | Consume recovery token & save new 10-round bcrypt password |
+| `GET` | `/users/profile` | Protected (`student`) | `Authorization: Bearer <token>` | Retrieve student personal & academic profile |
+| `PUT` | `/users/profile` | Protected (`student`) | `Authorization: Bearer <token>` | Update own profile (enforces `403` cross-user isolation) |
 | `GET` | `/profile` | Protected (`student`) | `Authorization: Bearer <token>` | Retrieve OJT profile & computed metrics |
 | `PUT` | `/profile` | Protected (`student`) | `Authorization: Bearer <token>` | Create or update OJT parameters |
 
@@ -343,9 +349,12 @@ Base URL: `http://localhost:5000/api`
 | **Increment 1** | Role-Based Access Control (RBAC) | **Complete** | `student` role enforced across frontend & API |
 | **Increment 1** | OJT Placement Onboarding (`FR-1.4`/`1.5`) | **Complete** | Company name, required hours, schedule |
 | **Increment 1** | Hours & Progress Forecasting (`FR-2.4`/`2.5`) | **Complete** | Remaining hours, % completion, end date forecast |
-| **Increment 2** | Daily Time In / Time Out Log (`FR-2.1`) | *Planned* | Daily shift logging, lunch break deductions |
-| **Increment 2** | Smart Daily Work Journal (`FR-3.1`) | *Planned* | Rich-text daily activity notes |
-| **Increment 2** | AI Journal Polisher (`FR-3.3`) | *Planned* | LLM prompt integration to polish student entries |
-| **Increment 3** | Weekly Report Generation (`FR-4.1`) | *Planned* | Aggregate daily logs into weekly format |
-| **Increment 3** | Printable PDF Export (`FR-4.3`) | *Planned* | School-ready PDF export of signed timesheets |
-| **Increment 3** | Supervisor Signature / Verification | *Planned* | Digital supervisor sign-off workflow |
+| **Increment 2** | User Profile Management (`/profile`) | **Complete** | View/edit Name, Email, Student ID, Contact, Program; anti-IDOR `403` |
+| **Increment 2** | Reset Password / Forgot Password | **Complete** | SHA-256 hashed 15-min single-use tokens + Dev Recovery Notification |
+| **Increment 2** | Authenticated Change Password | **Complete** | Current password bcrypt verification, non-reuse, JWT rotation |
+| **Increment 2** | Increment 2 Completion Report PDF | **Complete** | Saved at `docs/Increment-2-Completion-Report.pdf` |
+| **Increment 3** | Daily Time In / Time Out Log (`FR-2.1`) | *Planned* | Daily shift logging, lunch break deductions |
+| **Increment 3** | Smart Daily Work Journal (`FR-3.1`) | *Planned* | Rich-text daily activity notes |
+| **Increment 3** | AI Journal Polisher (`FR-3.3`) | *Planned* | LLM prompt integration to polish student entries |
+| **Increment 4** | Weekly Report Generation (`FR-4.1`) | *Planned* | Aggregate daily logs into weekly format |
+| **Increment 4** | Printable PDF Export (`FR-4.5`) | *Planned* | School-ready PDF export of signed timesheets |
