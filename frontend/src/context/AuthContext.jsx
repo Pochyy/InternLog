@@ -84,6 +84,23 @@ export function AuthProvider({ children }) {
     return res;
   };
 
+  const changePassword = async (currentPassword, newPassword, confirmPassword) => {
+    const res = await apiRequest('/auth/change-password', {
+      method: 'PUT',
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword,
+        confirm_password: confirmPassword
+      })
+    });
+
+    if (res.success && res.data?.token) {
+      localStorage.setItem('internlog_token', res.data.token);
+    }
+
+    return res;
+  };
+
   const logout = async () => {
     try {
       await apiRequest('/auth/logout', { method: 'POST' });
@@ -108,6 +125,7 @@ export function AuthProvider({ children }) {
         register,
         login,
         updateUserProfile,
+        changePassword,
         logout
       }}
     >

@@ -44,7 +44,7 @@
      - **User Schema Extensions:** Extend `users` table with `student_id_number`, `contact_number`, and `academic_program` alongside existing profile fields.
   4. Prepared step-by-step incremental development, testing, and Git commit/push protocol.
   5. Established requirements for generating `docs/Increment-2-Completion-Report.pdf` from the official report template.
-* **Active Status:** Increment 2 Feature 1 (`feature/user-profile-management`) built, verified, and pushed. Proceeding to Feature 2 (`feature/change-password`).
+* **Active Status:** Increment 2 Feature 1 (`feature/user-profile-management`) and Feature 2 (`feature/change-password`) built, verified, and pushed. Proceeding to Feature 3 (`feature/reset-password`).
 
 ### Session 3: Increment 2 Execution — Feature-by-Feature Build, Verification & Git Pushes
 * **Timestamp:** 2026-11-25
@@ -52,7 +52,11 @@
   - Extended `users` SQLite schema (`student_id_number`, `contact_number`, `academic_program`, `updated_at`) with automatic non-destructive `ALTER TABLE` migration in `backend/src/config/db.js`.
   - Created `backend/src/controllers/userController.js` and `backend/src/routes/userRoutes.js` (`/api/users/profile` & `/api/users/:userId`) enforcing strict row-level authorization (`403 Forbidden` on cross-user access), format validation, and duplicate email/student ID checks (`409 Conflict`).
   - Built `frontend/src/pages/UserProfile.jsx` in Pro Max Bento Grid layout with View/Edit modes, updated `Navbar.jsx`, `StudentDashboard.jsx`, and `AuthContext.jsx`.
-  - Passed full API integration suite & Vite production build.
+  - Passed full API integration suite & Vite production build. Pushed branch (`8a63414`).
+* **Feature 2 (`feature/change-password`) — Completed & Verified:**
+  - Implemented `PUT / POST /api/auth/change-password` in `authController.js` verifying `current_password` via `bcrypt.compare`, enforcing length/confirmation/non-reuse rules, hashing `new_password` with 10 salt rounds, revoking prior JWT, and rotating session token.
+  - Built `frontend/src/components/ChangePasswordCard.jsx` and integrated it into `UserProfile.jsx` and `AuthContext.jsx`.
+  - Verified all 11 security & validation assertions including old password invalidation.
 
 ---
 

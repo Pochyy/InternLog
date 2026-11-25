@@ -249,9 +249,120 @@ function getMe(req, res) {
   }
 }
 
+/**
+ * PUT / POST /api/auth/change-password
+ * Allows an authenticated user to change their password after verifying their current password.
+ * Overwrites password_hash with a fresh 10-round bcrypt hash and rotates the active JWT token.
+ */
+async function changePassword(req, res) {
+  try {
+    const userId = req.user.user_id;
+    const { current_password, new_password, confirm_password, confirm_new_password } = req.body;
+    const confirmation =
+      confirm_password !== undefined ? confirm_password : confirm_new_password;
+
+    if (!current_password || !new_password || confirmation === undefined || confirmation === '') {
+      return res.status(400).json({
+        success: false,
+        message: 'Current password, new password, and password confirmation are all required.'
+      });
+    }
+
+    const userRecord = queryOne(
+      'SELECT user_id, email, role, password_hash FROM users WHERE user_id = ?',
+      [userId]
+    );
+
+    if (!userRecord) {
+      return res.status(404).json({
+        success: false,
+        message: 'User account not found.'
+      });
+    }
+
+    // 1. Verify current password against stored bcrypt hash
+    const isCurrentValid = await bcrypt.compare(
+      String(current_password),
+      userRecord.password_hash
+    );
+    if (!isCurrentValid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Current password is incorrect. Please verify and try again.'
+      });
+    }
+
+    // 2. Validate new password strength & confirmation match
+    if (String(new_password).length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password must be at least 6 characters long.'
+      });
+    }
+
+    if (String(new_password) !== String(confirmation)) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password and confirmation password do not match.'
+      });
+    }
+
+    // 3. Prevent reusing the exact same password
+    const isSameAsOld = await bcrypt.compare(String(new_password), userRecord.password_hash);
+    if (isSameAsOld) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password must be different from your current password.'
+      });
+    }
+
+    // 4. Hash new password and overwrite old hash so previous password can never authenticate again
+    const salt = await bcrypt.genSalt(10);
+    const newPasswordHash = await bcrypt.hash(String(new_password), salt);
+    const now = new Date().toISOString();
+
+    execute('UPDATE users SET password_hash = ?, updated_at = ? WHERE user_id = ?', [
+      newPasswordHash,
+      now,
+      userId
+    ]);
+
+    // 5. Revoke previous JWT token and issue rotated session token
+    if (req.token) {
+      const existingRevoked = queryOne('SELECT token FROM revoked_tokens WHERE token = ?', [
+        req.token
+      ]);
+      if (!existingRevoked) {
+        execute('INSERT INTO revoked_tokens (token, revoked_at) VALUES (?, ?)', [req.token, now]);
+      }
+    }
+
+    const rotatedToken = jwt.sign(
+      { user_id: userRecord.user_id, email: userRecord.email, role: userRecord.role },
+      JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: 'Your password has been changed successfully.',
+      data: {
+        token: rotatedToken
+      }
+    });
+  } catch (error) {
+    console.error('Change password error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'An error occurred while updating your password.'
+    });
+  }
+}
+
 module.exports = {
   register,
   login,
   logout,
-  getMe
+  getMe,
+  changePassword
 };
