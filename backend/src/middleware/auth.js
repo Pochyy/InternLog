@@ -31,7 +31,10 @@ function authenticateToken(req, res, next) {
 
     // Ensure user still exists in database
     const user = queryOne(
-      'SELECT user_id, email, full_name, role, profile_picture_url, created_at, last_login_at FROM users WHERE user_id = ?',
+      `SELECT user_id, email, full_name, role, profile_picture_url,
+              student_id_number, contact_number, academic_program,
+              created_at, updated_at, last_login_at
+       FROM users WHERE user_id = ?`,
       [decoded.user_id]
     );
 

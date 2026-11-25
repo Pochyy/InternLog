@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
@@ -20,6 +20,9 @@ export default function Navbar() {
       .map((part) => part[0].toUpperCase())
       .join('');
   };
+
+  const hasCustomAvatar =
+    user?.profile_picture_url && !user.profile_picture_url.includes('ui-avatars.com/api/');
 
   return (
     <header className="navbar">
@@ -45,10 +48,38 @@ export default function Navbar() {
         </Link>
 
         {isAuthenticated && user ? (
-          <div className="nav-user">
-            <div className="user-profile-pill">
-              <div className="user-avatar" aria-hidden="true">
-                {getInitials(user.full_name)}
+          <div className="nav-user" style={{ flexWrap: 'wrap' }}>
+            <nav className="nav-links" aria-label="Workspace Navigation">
+              <NavLink
+                to="/dashboard"
+                className={({ isActive }) => `nav-link-pill${isActive ? ' active' : ''}`}
+              >
+                Dashboard
+              </NavLink>
+              <NavLink
+                to="/profile"
+                className={({ isActive }) => `nav-link-pill${isActive ? ' active' : ''}`}
+              >
+                My Profile
+              </NavLink>
+            </nav>
+
+            <Link
+              to="/profile"
+              className="user-profile-pill"
+              style={{ textDecoration: 'none' }}
+              title="Manage your student profile"
+            >
+              <div className="user-avatar" aria-hidden="true" style={{ overflow: 'hidden' }}>
+                {hasCustomAvatar ? (
+                  <img
+                    src={user.profile_picture_url}
+                    alt=""
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  getInitials(user.full_name)
+                )}
               </div>
               <div className="user-meta">
                 <span className="user-name">{user.full_name}</span>
@@ -56,7 +87,7 @@ export default function Navbar() {
                   {user.role === 'student' ? 'OJT Student' : user.role}
                 </span>
               </div>
-            </div>
+            </Link>
 
             <button onClick={handleLogout} className="btn btn-outline-nav" type="button">
               <svg

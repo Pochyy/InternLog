@@ -535,6 +535,105 @@ body {
   border: 1px solid #FDBA74;
 }
 
+.alert-success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+  border: 1px solid #A7F3D0;
+}
+
+.alert-info {
+  background-color: #F0FDFA;
+  color: var(--color-foreground);
+  border: 1px solid var(--color-border);
+}
+
+/* Navbar Navigation Links */
+.nav-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #F1F5F9;
+  padding: 0.28rem;
+  border-radius: 999px;
+  border: 1px solid #E2E8F0;
+}
+
+.nav-link-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.95rem;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--color-muted-foreground);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.nav-link-pill:hover {
+  color: var(--color-foreground);
+}
+
+.nav-link-pill.active {
+  background: #FFFFFF;
+  color: var(--color-primary-hover);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.07);
+}
+
+/* Bento Span 7 & 5 Utilities for Profile Layout */
+.bento-span-7 {
+  grid-column: span 7;
+}
+
+.bento-span-5 {
+  grid-column: span 5;
+}
+
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.field-hint {
+  display: block;
+  font-size: 0.77rem;
+  color: var(--color-muted-foreground);
+  margin-top: 0.32rem;
+  font-weight: 500;
+}
+
+.profile-hero-identity {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.profile-avatar-lg {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 2px solid rgba(255, 255, 255, 0.38);
+  color: #FFFFFF;
+  font-size: 1.55rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+}
+
+.profile-avatar-lg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .auth-footer {
   margin-top: 1.5rem;
   text-align: center;
@@ -930,8 +1029,10 @@ body {
     padding: 2rem 1.75rem;
   }
   .bento-span-8,
-  .bento-span-4,
-  .bento-span-6 {
+  .bento-span-7,
+  .bento-span-6,
+  .bento-span-5,
+  .bento-span-4 {
     grid-column: span 12;
   }
   .bento-span-3 {
@@ -942,6 +1043,9 @@ body {
 @media (max-width: 600px) {
   .bento-span-3 {
     grid-column: span 12;
+  }
+  .form-grid-2 {
+    grid-template-columns: 1fr;
   }
   .preview-metrics-row {
     grid-template-columns: 1fr;
